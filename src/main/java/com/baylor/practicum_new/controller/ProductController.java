@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -87,8 +88,8 @@ public class ProductController {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> listProductsGroupedByCategories() {
-        List<Category> categoriesWithProducts = productService.getCategoriesWithProducts();
+    public ResponseEntity<List<ProductWithCategories>> listProductsGroupedByCategories() {
+        List<ProductWithCategories> categoriesWithProducts = productService.getCategoriesWithProducts();
         return ResponseEntity.ok(categoriesWithProducts);
     }
 

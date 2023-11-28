@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByCategoriesCategoryId(Long categoryId);
 
-    @Query("SELECT p FROM Product p WHERE p.categories IS EMPTY")
+    @Query("SELECT p FROM Product p WHERE p.categories IS NOT NULL")
     List<Product> findProductsWithoutCategories();
 
     @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.categoryId = :categoryId")

@@ -22,7 +22,7 @@ public interface ProductService {
 
     List<Product> getProductsWithCategories(Long categoryId);
 
-    List<Category> getCategoriesWithProducts();
+    List<ProductWithCategories> getCategoriesWithProducts();
 
     public void bulkCreateUsersAndProducts(List<BulkUploadDTO.UserProductInput> userInputs);
 }

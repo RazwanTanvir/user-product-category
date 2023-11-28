@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,20 @@ public class ProductServiceImpl implements ProductService {
         product.setUser(user);
         product.setProductName(productName);
         product.setDescription(description);
+
+        Set<Category> categories = new HashSet<>();
+        if (categoryIds.isEmpty()) {
+            product.setCategories(null);
+        } else {
+
+            for (Long categoryId : categoryIds) {
+                Category category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: " + categoryId));
+                categories.add(category);
+            }
+            product.setCategories(categories);
+        }
+
 
         Product savedProduct = productRepository.save(product);
         return new ProductDTO(savedProduct.getProductId(), savedProduct.getProductName(), savedProduct.getDescription(), savedProduct.getCategories());
@@ -105,15 +120,35 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getProductsWithCategories(Long categoryId) {
         if (categoryId == 0) {
-            return productRepository.findByCategoriesCategoryId(null);
+            return productRepository.findAll();
         } else {
             return productRepository.findByCategoriesCategoryId(categoryId);
         }
     }
 
     @Override
-    public List<Category> getCategoriesWithProducts() {
-        return categoryRepository.findCategoriesWithProducts();
+    public List<ProductWithCategories> getCategoriesWithProducts() {
+//        List<Object[]> object =  categoryRepository.findCategoriesWithProducts();
+        ProductCategoryDTO productCategoryDTO = new ProductCategoryDTO();
+        List<ProductWithCategories> result = new ArrayList<>();
+
+        int count = 0;
+        for (Object[] row : categoryRepository.findCategoriesWithProducts()) {
+
+            Long productId = Long.parseLong(row[0].toString());
+            String productName = row[1].toString();
+
+            String description = row[2].toString();
+
+            String categoryIds = row[3].toString();
+
+            result.add(new ProductWithCategories(
+                    productId, productName, description, categoryIds
+
+            ));
+
+        }
+        return result;
     }
 
     @Transactional
